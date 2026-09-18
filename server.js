@@ -8,7 +8,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const Database = require('better-sqlite3');
+const { Pool } = require('pg');
 
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -23,10 +23,10 @@ if (fs.existsSync(SECRET_PATH)) {
   fs.writeFileSync(SECRET_PATH, JWT_SECRET);
 }
 
-const db = new Database(path.join(DATA_DIR, 'suiviscolaire.db'));
-db.pragma('journal_mode = WAL');
-
-db.exec(`
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 CREATE TABLE IF NOT EXISTS etablissements (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nom TEXT NOT NULL,
@@ -56,6 +56,25 @@ function defaultData(nom) {
     params: { ecole: nom, annee: '2025–2026', mois: 'Septembre', dateLimiteJour: 0 }
   };
 }
+pool.query(`
+  CREATE TABLE IF NOT EXISTS etablissements (
+    id SERIAL PRIMARY KEY,
+    nom TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    data JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS prof_access (
+    id SERIAL PRIMARY KEY,
+    etablissement_id INTEGER NOT NULL REFERENCES etablissements(id),
+    classe TEXT NOT NULL,
+    matiere TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    UNIQUE(etablissement_id, classe, matiere)
+  );
+`).catch(err => console.error('Erreur création tables:', err));
 
 const app = express();
 
