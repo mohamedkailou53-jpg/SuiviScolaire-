@@ -3,9 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#27432d">
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>SuiviScolaire — Lycée d'Excellence de Tessaoua</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -281,4 +278,2019 @@ tr:hover td{background:var(--primary-pale);}
       <div class="auth-head-sub">Connexion à votre espace</div>
     </div>
     <div class="auth-tabs">
-      <div class="auth-tab active" id="tab-admi
+      <div class="auth-tab active" id="tab-admin" onclick="switchAuthTab('admin')">🏫 Direction</div>
+      <div class="auth-tab" id="tab-prof" onclick="switchAuthTab('prof')">✏️ Professeur</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-error" id="auth-error"></div>
+
+      <!-- CONNEXION DIRECTION -->
+      <div class="auth-panel active" id="panel-admin-login">
+        <div class="form-group"><label class="form-label">Email de l'établissement</label><input class="form-input" id="login-email" type="email" placeholder="direction@ecole.ne"></div>
+        <div class="form-group"><label class="form-label">Mot de passe</label><input class="form-input" id="login-password" type="password" onkeydown="if(event.key==='Enter')doLoginAdmin()"></div>
+        <button class="btn btn-primary btn-block" onclick="doLoginAdmin()">Se connecter</button>
+        <div class="auth-switch">Pas encore de compte ? <a onclick="switchAuthTab('register')">Créer mon établissement</a></div>
+      </div>
+
+      <!-- CRÉATION ÉTABLISSEMENT -->
+      <div class="auth-panel" id="panel-admin-register">
+        <div class="form-group"><label class="form-label">Nom de l'établissement</label><input class="form-input" id="reg-nom" placeholder="Lycée d'Excellence de Tessaoua"></div>
+        <div class="form-group"><label class="form-label">Email (identifiant direction)</label><input class="form-input" id="reg-email" type="email" placeholder="direction@ecole.ne"></div>
+        <div class="form-group"><label class="form-label">Mot de passe</label><input class="form-input" id="reg-password" type="password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+        <button class="btn btn-primary btn-block" onclick="doRegister()">Créer mon établissement</button>
+        <div class="auth-switch">Déjà un compte ? <a onclick="switchAuthTab('admin')">Se connecter</a></div>
+      </div>
+
+      <!-- CONNEXION PROFESSEUR -->
+      <div class="auth-panel" id="panel-prof-login">
+        <div class="form-group">
+          <label class="form-label">Établissement</label>
+          <select class="form-select" id="prof-etab"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Classe</label>
+          <select class="form-select" id="prof-classe" onchange="fillProfMatieres()"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Matière</label>
+          <select class="form-select" id="prof-matiere"></select>
+        </div>
+        <div class="form-group"><label class="form-label">Mot de passe (fourni par la direction)</label><input class="form-input" id="prof-password" type="password" onkeydown="if(event.key==='Enter')doLoginProf()"></div>
+        <button class="btn btn-primary btn-block" onclick="doLoginProf()">Accéder à ma matière</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-school" id="sidebar-school">Lycée d'Excellence de Tessaoua</div>
+    <div class="logo-title">SuiviScolaire</div>
+    <div class="logo-sub">Gestion des notes</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">Principal</div>
+    <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">🏠</span> Tableau de bord</div>
+    <div class="nav-item" onclick="showPage('notes')"><span class="nav-icon">✏️</span> Saisie des notes</div>
+    <div class="nav-item" onclick="showPage('bulletins')"><span class="nav-icon">📋</span> Bulletins</div>
+    <div class="nav-item" onclick="showPage('historique')"><span class="nav-icon">📈</span> Historique</div>
+    <div class="nav-item" onclick="showPage('envoi')"><span class="nav-icon">📱</span> Envoi WhatsApp</div>
+    <div class="nav-item" onclick="showPage('classement')"><span class="nav-icon">🏆</span> Classement</div>
+    <div class="nav-group" style="margin-top:6px;">Gestion</div>
+    <div class="nav-item" onclick="showPage('eleves')"><span class="nav-icon">👨‍🎓</span> Élèves</div>
+    <div class="nav-item" onclick="showPage('parents')"><span class="nav-icon">👨‍👩‍👧</span> Parents</div>
+    <div class="nav-group" style="margin-top:6px;">Configuration</div>
+    <div class="nav-item" onclick="showPage('parametres')"><span class="nav-icon">⚙️</span> Paramètres</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-date" id="sidebar-date"></div>
+    <div class="sidebar-annee" id="sidebar-annee">Année scolaire 2025–2026</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="topbar-title">Tableau de bord</div>
+      <div class="topbar-date" id="topbar-date"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="badge-mois" id="badge-mois">📅 Juin 2025</div>
+      <div class="topbar-user">
+        <div class="topbar-user-info">
+          <div class="topbar-user-name" id="user-name">—</div>
+          <div class="topbar-user-role" id="user-role">—</div>
+        </div>
+        <div class="avatar" id="user-avatar">P</div>
+        <button class="btn btn-outline btn-sm" onclick="logout()">🚪 Quitter</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div id="rappel-fin-mois"></div>
+      <div class="welcome-banner">
+        <div class="welcome-school" id="welcome-school-name">Lycée d'Excellence de Tessaoua</div>
+        <div class="welcome-title">Bienvenue sur SuiviScolaire</div>
+        <div class="welcome-sub">Gérez et transmettez les notes de vos élèves facilement.</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Élèves inscrits</div><div class="stat-value" id="s-eleves">1</div><div class="stat-sub">5 classes</div></div>
+        <div class="stat-card or"><div class="stat-label">Notes ce mois</div><div class="stat-value" id="s-notes">0</div><div class="stat-sub" id="s-mois-label">—</div></div>
+        <div class="stat-card bleu"><div class="stat-label">Parents inscrits</div><div class="stat-value" id="s-parents">1</div><div class="stat-sub">Numéros WhatsApp</div></div>
+        <div class="stat-card rouge"><div class="stat-label">Bulletins prêts</div><div class="stat-value" id="s-bulletins">0</div><div class="stat-sub">À envoyer</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📊 Récapitulatif du mois</div><button class="btn btn-primary btn-sm" onclick="showPage('notes')">✏️ Saisir des notes</button></div>
+        <div class="card-body" id="dashboard-recap"><div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">Aucune note saisie ce mois.</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">⚡ Actions rapides</div></div>
+        <div class="card-body" style="display:flex;gap:9px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="showPage('notes')">✏️ Saisir des notes</button>
+          <button class="btn btn-accent" onclick="showPage('bulletins')">📋 Voir les bulletins</button>
+          <button class="btn btn-wa" onclick="showPage('envoi')">📱 Envoyer via WhatsApp</button>
+          <button class="btn btn-outline" onclick="openModal('modal-eleve')">➕ Ajouter un élève</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAISIE DES NOTES -->
+    <div class="page" id="page-notes">
+      <div class="class-tabs" id="class-tabs-notes"></div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-header"><div class="card-title" id="classe-label">📚 Choisissez une classe</div></div>
+        <div class="card-body"><div class="matieres-grid" id="matieres-grid"></div></div>
+      </div>
+      <div class="note-panel" id="note-panel">
+        <div class="note-panel-header">
+          <div class="note-panel-title" id="note-panel-title">✏️ Notes</div>
+          <button class="btn btn-outline btn-sm" onclick="closeNotePanel()">✕ Fermer</button>
+        </div>
+        <div id="note-rows"></div>
+        <div style="margin-top:14px;display:flex;gap:7px;">
+          <button class="btn btn-primary" onclick="saveNotes()">💾 Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BULLETINS -->
+    <div class="page" id="page-bulletins">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <div class="class-tabs" id="class-tabs-bulletins" style="margin-bottom:0;"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="showPage('historique')">📈 Voir l'historique</button>
+          <button class="btn btn-accent btn-sm" onclick="downloadAllPDF()">📄 Télécharger tous les PDF (classe)</button>
+        </div>
+      </div>
+      <div id="bulletins-container"></div>
+    </div>
+
+    <!-- HISTORIQUE MULTI-MOIS -->
+    <div class="page" id="page-historique">
+      <div class="class-tabs" id="class-tabs-historique"></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📈 Évolution mensuelle — <span id="hist-classe-label"></span></div></div>
+        <div class="card-body" style="padding:0;">
+          <table><thead><tr><th>Élève</th><th id="hist-mois-headers"></th></tr></thead>
+          <tbody id="historique-tbody"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">⚠️ Alertes décrochage</div></div>
+        <div class="card-body" id="alertes-decrochage"></div>
+      </div>
+    </div>
+
+    <!-- ENVOI WHATSAPP -->
+    <div class="page" id="page-envoi">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📱 Envoi des bulletins</div></div>
+        <div class="card-body">
+          <div class="send-progress" id="send-progress">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:0.82rem;font-weight:700;" id="send-progress-label">Envoi en cours...</span>
+              <span style="font-size:0.78rem;color:var(--text2);" id="send-progress-count"></span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar" id="send-progress-bar" style="width:0%"></div></div>
+          </div>
+          <div id="envoi-list"></div>
+          <div class="divider"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;">
+            <div id="envoi-summary" style="font-size:0.8rem;color:var(--text2);"></div>
+            <button class="btn btn-wa" id="btn-send-all" onclick="sendAll()">📱 Envoyer tous les bulletins</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLASSEMENT -->
+    <div class="page" id="page-classement">
+      <div class="card">
+        <div class="card-header"><div class="card-title">🏆 Meilleurs de l'établissement — <span id="cl-mois"></span></div></div>
+        <div class="card-body">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">🥇 Top 3 — <span id="cl-school"></span></div>
+          <div class="podium-row" id="podium-etab"></div>
+        </div>
+      </div>
+      <div id="classement-classes"></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📊 Moyenne par matière et par classe — <span id="cl-mois2"></span></div></div>
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table><thead><tr id="matclasse-header"></tr></thead><tbody id="matclasse-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉLÈVES -->
+    <div class="page" id="page-eleves">
+      <div class="card">
+        <div class="card-header"><div class="card-title">👨‍🎓 Liste des élèves</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('modal-import')">📥 Import en masse</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-eleve')">➕ Ajouter</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:14px 20px;border-bottom:1px solid var(--border);">
+          <input class="form-input" placeholder="🔍 Rechercher un élève, un parent, une classe..." oninput="filterEleves(this.value)">
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table><thead><tr><th>Nom</th><th>Classe</th><th>Parent</th><th>WhatsApp</th><th>Actions</th></tr></thead>
+          <tbody id="eleves-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARENTS -->
+    <div class="page" id="page-parents">
+      <div class="card">
+        <div class="card-header"><div class="card-title">👨‍👩‍👧 Liste des parents</div><button class="btn btn-primary btn-sm" onclick="openModal('modal-parent')">➕ Ajouter/Modifier</button></div>
+        <div class="card-body" style="padding:14px 20px;border-bottom:1px solid var(--border);">
+          <input class="form-input" placeholder="🔍 Rechercher un parent ou un élève..." oninput="filterEleves(this.value)">
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table><thead><tr><th>Parent</th><th>WhatsApp</th><th>Élève</th><th>Actions</th></tr></thead>
+          <tbody id="parents-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARAMÈTRES -->
+    <div class="page" id="page-parametres">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🎨 Apparence</div></div>
+          <div class="card-body">
+            <div class="setting-item">
+              <span class="setting-label">Thème</span>
+              <div style="display:flex;gap:9px;">
+                <button class="btn btn-outline btn-sm" id="btn-light" onclick="setTheme('light')">☀️ Clair</button>
+                <button class="btn btn-outline btn-sm" id="btn-dark" onclick="setTheme('dark')">🌙 Sombre</button>
+              </div>
+            </div>
+            <div class="setting-item">
+              <span class="setting-label">Couleur principale</span>
+              <div class="color-swatches" id="color-swatches"></div>
+            </div>
+            <div class="setting-item">
+              <span class="setting-label">Taille de la police</span>
+              <div style="display:flex;align-items:center;gap:9px;">
+                <span style="font-size:0.7rem;">A</span>
+                <input type="range" class="size-slider" id="font-size-slider" min="12" max="18" value="14" oninput="setFontSize(this.value)">
+                <span style="font-size:1rem;">A</span>
+                <span id="fs-label" style="font-size:0.76rem;color:var(--text2);">14px</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <span class="setting-label">Police d'écriture</span>
+              <div class="font-options" id="font-options"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🏫 École & Année scolaire</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Nom de l'établissement</label><input class="form-input" id="param-ecole"></div>
+            <div class="form-group"><label class="form-label">Année scolaire</label><input class="form-input" id="param-annee" placeholder="Ex : 2025–2026"></div>
+            <div class="form-group">
+              <label class="form-label">Mois courant</label>
+              <select class="form-select" id="param-mois">
+                <option>Septembre</option><option>Octobre</option><option>Novembre</option>
+                <option>Décembre</option><option>Janvier</option><option>Février</option>
+                <option>Mars</option><option>Avril</option><option>Mai</option><option>Juin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">🔒 Verrouillage automatique des notes</label>
+              <select class="form-select" id="param-lock">
+                <option value="0">Désactivé — toujours modifiable</option>
+                <option value="1">Verrouiller les notes des mois passés</option>
+              </select>
+              <div style="font-size:0.72rem;color:var(--text2);margin-top:5px;">Si activé, un mois n'est plus modifiable une fois qu'on change de mois calendaire.</div>
+            </div>
+            <button class="btn btn-primary" onclick="saveParams()">💾 Enregistrer</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🔔 Fonctionnalités</div></div>
+          <div class="card-body">
+            <div class="toggle-row"><span style="font-size:0.83rem;">Afficher les moyennes</span><label class="toggle"><input type="checkbox" id="tog-moy" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><span style="font-size:0.83rem;">Afficher le classement</span><label class="toggle"><input type="checkbox" id="tog-cl" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><span style="font-size:0.83rem;">Confirmer avant envoi</span><label class="toggle"><input type="checkbox" id="tog-confirm" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><span style="font-size:0.83rem;">Rappel fin de mois</span><label class="toggle"><input type="checkbox" id="tog-rappel" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><span style="font-size:0.83rem;">Mode sombre automatique (nuit)</span><label class="toggle"><input type="checkbox" id="tog-autod"><span class="toggle-slider"></span></label></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🗄️ Données</div></div>
+          <div class="card-body">
+            <p style="font-size:0.81rem;color:var(--text2);margin-bottom:13px;">Les données de l'établissement sont sauvegardées automatiquement sur le serveur local. Exportez pour faire des sauvegardes.</p>
+            <div style="display:flex;flex-direction:column;gap:7px;">
+              <button class="btn btn-outline" onclick="exportData()">📤 Exporter les données (JSON)</button>
+              <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">📥 Importer des données</button>
+              <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+            </div>
+          </div>
+        </div>
+        <div class="card" id="card-prof-access" style="grid-column:1 / -1;">
+          <div class="card-header"><div class="card-title">🔑 Accès des professeurs (par classe et matière)</div></div>
+          <div class="card-body">
+            <p style="font-size:0.81rem;color:var(--text2);margin-bottom:13px;">Définissez un mot de passe pour chaque classe/matière. Un professeur ne pourra saisir ou consulter que les notes de la matière et de la classe pour lesquelles il possède ce mot de passe.</p>
+            <div class="class-tabs" id="pa-class-tabs"></div>
+            <table class="prof-access-table">
+              <thead><tr><th style="text-align:left;font-size:0.68rem;color:var(--text2);text-transform:uppercase;">Matière</th><th style="text-align:left;font-size:0.68rem;color:var(--text2);text-transform:uppercase;">Statut</th><th style="text-align:left;font-size:0.68rem;color:var(--text2);text-transform:uppercase;">Nouveau mot de passe</th><th></th></tr></thead>
+              <tbody id="pa-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-eleve">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ Ajouter un élève</div><button class="modal-close" onclick="closeModal('modal-eleve')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nom complet de l'élève</label><input class="form-input" id="ne-nom" placeholder="Ex : Moussa Diallo"></div>
+      <div class="form-group"><label class="form-label">Classe</label>
+        <select class="form-select" id="ne-classe">
+          <option>Seconde</option><option>Première C</option><option>Première D</option>
+          <option>Terminale C</option><option>Terminale D</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Nom du parent</label><input class="form-input" id="ne-pnom" placeholder="Ex : Amadou Diallo"></div>
+      <div class="form-group"><label class="form-label">Numéro WhatsApp du parent</label><input class="form-input" id="ne-ptel" placeholder="Ex : +227 90000000"></div>
+      <div class="divider"></div>
+      <div style="font-size:0.74rem;color:var(--text2);margin-bottom:8px;">👤 Contact de secours (optionnel)</div>
+      <div class="form-group"><label class="form-label">Nom du contact de secours</label><input class="form-input" id="ne-secnom" placeholder="Ex : Tuteur, oncle, voisin..."></div>
+      <div class="form-group"><label class="form-label">Numéro WhatsApp de secours</label><input class="form-input" id="ne-sectel" placeholder="Ex : +227 90000000"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-eleve')">Annuler</button><button class="btn btn-primary" onclick="addEleve()">✅ Enregistrer</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-parent">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">✏️ Modifier un parent</div><button class="modal-close" onclick="closeModal('modal-parent')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nom du parent</label><input class="form-input" id="p-nom" placeholder="Ex : Ibrahim Sow"></div>
+      <div class="form-group"><label class="form-label">Numéro WhatsApp</label><input class="form-input" id="p-tel" placeholder="Ex : +227 90000000"></div>
+      <div class="form-group"><label class="form-label">Élève associé</label><select class="form-select" id="p-eleve"></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-parent')">Annuler</button><button class="btn btn-primary" onclick="addParent()">✅ Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- Modal envoi groupé (liens tous copiés) -->
+<div class="modal-overlay" id="modal-sendall">
+  <div class="modal" style="width:560px;">
+    <div class="modal-header"><div class="modal-title">📱 Envoyer tous les bulletins via WhatsApp</div><button class="modal-close" onclick="closeModal('modal-sendall')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:var(--primary-pale);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--text);line-height:1.6;">
+        Pour chaque élève : cliquez sur <strong>📄📱 PDF + WhatsApp</strong>. Le PDF se télécharge automatiquement et WhatsApp s'ouvre avec le message prêt.<br>
+        Dans WhatsApp, appuyez sur <strong>📎 (trombone)</strong> → <strong>Document</strong> → choisissez le PDF dans vos téléchargements → <strong>Envoyer</strong>.
+      </div>
+      <div id="sendall-list"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-sendall')">Fermer</button></div>
+  </div>
+</div>
+
+<!-- Modal import en masse -->
+<div class="modal-overlay" id="modal-import">
+  <div class="modal" style="width:560px;">
+    <div class="modal-header"><div class="modal-title">📥 Importer des élèves en masse</div><button class="modal-close" onclick="closeModal('modal-import')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--text2);margin-bottom:12px;">
+        Collez vos données au format CSV (une ligne par élève), séparées par des virgules :<br>
+        <code style="font-size:0.74rem;background:var(--primary-pale);padding:2px 6px;border-radius:4px;">Nom élève, Classe, Nom parent, Téléphone parent</code>
+      </p>
+      <div class="form-group">
+        <textarea class="form-input" id="import-textarea" rows="8" style="font-family:monospace;font-size:0.78rem;resize:vertical;"
+placeholder="Moussa Diallo, Seconde, Amadou Diallo, +22790000001
+Fatouma Issa, Première C, Issa Mahaman, +22790000002
+Ibrahim Sow, Terminale D, Sow Boubacar, +22790000003"></textarea>
+      </div>
+      <div style="font-size:0.74rem;color:var(--text2);">Classes valides : Seconde, Première C, Première D, Terminale C, Terminale D</div>
+      <div id="import-preview" style="margin-top:10px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-import')">Annuler</button>
+      <button class="btn btn-outline" onclick="previewImport()">👁️ Aperçu</button>
+      <button class="btn btn-primary" onclick="confirmImport()">✅ Importer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+
+<script>
+// ═══════════════════════════════════
+// ICÔNES PROFESSIONNELLES SVG/EMOJI
+// ═══════════════════════════════════
+const ICONS_MAT = {
+  'Mathématiques':       '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>',
+  'Sciences Physiques':  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>',
+  'SVT':                 '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/><path d="M12 2v10l4.24 4.24"/></svg>',
+  'Français':            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  'Anglais':             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  'Histoire-Géographie': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>',
+  'EFS':                 '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  'EPS':                 '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>',
+  'Conduite':            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+  'Informatique':        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  'Philosophie':         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+};
+
+const EMOJI_MAT = {
+  'Mathématiques':'➗','Sciences Physiques':'⚗️','SVT':'🌿','Français':'📖',
+  'Anglais':'🌍','Histoire-Géographie':'🗺️','EFS':'🏠','EPS':'🏃','Conduite':'🚗',
+  'Informatique':'💻','Philosophie':'🧠'
+};
+
+// ═══════════════════════════════════
+// CONFIG MATIÈRES & COEFFICIENTS
+// ═══════════════════════════════════
+const MATIERES_CONFIG = {
+  'Seconde': [
+    {nom:'Mathématiques',coeff:4,defaut:null},
+    {nom:'Sciences Physiques',coeff:4,defaut:null},
+    {nom:'SVT',coeff:3,defaut:null},
+    {nom:'Français',coeff:3,defaut:null},
+    {nom:'Anglais',coeff:2,defaut:null},
+    {nom:'Histoire-Géographie',coeff:2,defaut:null},
+    {nom:'Conduite',coeff:1,defaut:18},
+    {nom:'Informatique',coeff:1,defaut:null},
+    {nom:'EPS',coeff:1,defaut:null},
+    {nom:'EFS',coeff:1,defaut:null},
+  ],
+  'Première C': [
+    {nom:'Mathématiques',coeff:5,defaut:null},
+    {nom:'Sciences Physiques',coeff:5,defaut:null},
+    {nom:'SVT',coeff:2,defaut:null},
+    {nom:'Français',coeff:2,defaut:null},
+    {nom:'Anglais',coeff:2,defaut:null},
+    {nom:'Histoire-Géographie',coeff:2,defaut:null},
+    {nom:'Philosophie',coeff:1,defaut:null},
+    {nom:'Informatique',coeff:1,defaut:null},
+    {nom:'Conduite',coeff:1,defaut:18},
+    {nom:'EPS',coeff:1,defaut:null},
+    {nom:'EFS',coeff:1,defaut:null},
+  ],
+  'Première D': [
+    {nom:'Mathématiques',coeff:4,defaut:null},
+    {nom:'Sciences Physiques',coeff:4,defaut:null},
+    {nom:'SVT',coeff:4,defaut:null},
+    {nom:'Français',coeff:2,defaut:null},
+    {nom:'Anglais',coeff:2,defaut:null},
+    {nom:'Histoire-Géographie',coeff:2,defaut:null},
+    {nom:'Philosophie',coeff:1,defaut:null},
+    {nom:'Informatique',coeff:1,defaut:null},
+    {nom:'Conduite',coeff:1,defaut:18},
+    {nom:'EPS',coeff:1,defaut:null},
+    {nom:'EFS',coeff:1,defaut:null},
+  ],
+  'Terminale C': [
+    {nom:'Mathématiques',coeff:6,defaut:null},
+    {nom:'Sciences Physiques',coeff:6,defaut:null},
+    {nom:'SVT',coeff:2,defaut:null},
+    {nom:'Français',coeff:2,defaut:null},
+    {nom:'Anglais',coeff:2,defaut:null},
+    {nom:'Histoire-Géographie',coeff:2,defaut:null},
+    {nom:'Philosophie',coeff:2,defaut:null},
+    {nom:'Conduite',coeff:1,defaut:18},
+    {nom:'EPS',coeff:1,defaut:null},
+    {nom:'EFS',coeff:1,defaut:null},
+  ],
+  'Terminale D': [
+    {nom:'Mathématiques',coeff:5,defaut:null},
+    {nom:'Sciences Physiques',coeff:5,defaut:null},
+    {nom:'SVT',coeff:5,defaut:null},
+    {nom:'Français',coeff:2,defaut:null},
+    {nom:'Anglais',coeff:2,defaut:null},
+    {nom:'Histoire-Géographie',coeff:2,defaut:null},
+    {nom:'Philosophie',coeff:2,defaut:null},
+    {nom:'Conduite',coeff:1,defaut:18},
+    {nom:'EPS',coeff:1,defaut:null},
+    {nom:'EFS',coeff:1,defaut:null},
+  ],
+};
+
+const CLASSES = ['Seconde','Première C','Première D','Terminale C','Terminale D'];
+const DEVISE_ECOLE = "Solidarité · Discipline · Excellence · Réussite";
+const MOIS_ORDRE = ['Septembre','Octobre','Novembre','Décembre','Janvier','Février','Mars','Avril','Mai','Juin'];
+
+const COULEURS = [
+  {nom:'Kaki',val:'#5a6b3e'},{nom:'Olive',val:'#7d8c3f'},
+  {nom:'Bleu marine',val:'#1a4a7a'},{nom:'Bordeaux',val:'#7b241c'},
+  {nom:'Violet',val:'#5b2c6f'},{nom:'Teal',val:'#1a6b6b'},
+];
+
+const POLICES = [
+  {nom:'Inter',val:"'Inter', sans-serif"},
+  {nom:'Poppins',val:"'Poppins', sans-serif"},
+  {nom:'Roboto',val:"'Roboto', sans-serif"},
+  {nom:'Montserrat',val:"'Montserrat', sans-serif"},
+  {nom:'Open Sans',val:"'Open Sans', sans-serif"},
+];
+
+// ═══════════════════════════════════
+// AUTHENTIFICATION & DONNÉES (BACKEND)
+// ═══════════════════════════════════
+const API_BASE = ''; // même origine (servi par le backend Express)
+const AUTH_KEY = 'suiviscolaire_auth_v1';
+const SETTINGS_KEY = 'suiviscolaire_settings_v1';
+
+function loadAuth(){
+  try{ const raw=localStorage.getItem(AUTH_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return null;
+}
+function saveAuth(a){ try{ localStorage.setItem(AUTH_KEY, JSON.stringify(a)); }catch(e){} }
+function clearAuth(){ try{ localStorage.removeItem(AUTH_KEY); }catch(e){} }
+
+function loadSettings(){
+  try{ const raw=localStorage.getItem(SETTINGS_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return {theme:'light',color:'#5a6b3e',fontSize:14,font:"'Inter', sans-serif"};
+}
+function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(APP.settings)); }catch(e){} }
+
+function migrateData(d){
+  if(!d.appreciations) d.appreciations={};
+  if(!d.envois) d.envois={};
+  if(!d.params.dateLimiteJour) d.params.dateLimiteJour=0;
+  (d.eleves||[]).forEach(e=>{ if(e.secoursNom===undefined) e.secoursNom=''; if(e.secoursTel===undefined) e.secoursTel=''; });
+  return d;
+}
+
+let AUTH = loadAuth(); // {token, role, etabId, etabNom, classe, matiere}
+let APP = { eleves:[], notes:{}, appreciations:{}, envois:{}, params:{ecole:'',annee:'',mois:'Septembre',dateLimiteJour:0}, settings: loadSettings() };
+let eleves = APP.eleves;
+let notes  = APP.notes;
+let appreciations = APP.appreciations;
+let envois = APP.envois;
+let currentClasse = 'Seconde';
+let currentMatiere = null;
+let bulletinClasse = 'Seconde';
+let historiqueClasse = 'Seconde';
+
+async function apiFetch(path, opts={}){
+  opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+  if(AUTH && AUTH.token) opts.headers['Authorization'] = 'Bearer '+AUTH.token;
+  const res = await fetch(API_BASE+path, opts);
+  let body=null;
+  try{ body = await res.json(); }catch(e){}
+  if(!res.ok){ throw new Error((body&&body.error)||'Erreur serveur ('+res.status+')'); }
+  return body;
+}
+
+function saveData(){
+  // Envoi au serveur en fonction du rôle. Pas de blocage de l'UI (fire-and-forget).
+  if(!AUTH) return;
+  const payload = AUTH.role==='admin'
+    ? { eleves: APP.eleves, notes: APP.notes, appreciations: APP.appreciations, envois: APP.envois, params: APP.params }
+    : { notes: APP.notes, appreciations: APP.appreciations };
+  apiFetch('/api/data', { method:'PUT', body: JSON.stringify(payload) }).catch(err=>{
+    toast('❌ Sauvegarde impossible : '+err.message,'warning');
+  });
+}
+
+async function initApp(){
+  try{
+    const data = await apiFetch('/api/data');
+    APP.eleves = data.eleves||[];
+    APP.notes = data.notes||{};
+    APP.appreciations = data.appreciations||{};
+    APP.envois = data.envois||{};
+    APP.params = data.params||APP.params;
+    migrateData(APP);
+    eleves = APP.eleves; notes = APP.notes; appreciations = APP.appreciations; envois = APP.envois;
+
+    document.getElementById('auth-screen').style.display='none';
+    document.querySelector('.layout').classList.add('app-ready');
+
+    document.getElementById('user-name').textContent = AUTH.etabNom;
+    document.getElementById('user-avatar').textContent = AUTH.etabNom.charAt(0).toUpperCase();
+    if(AUTH.role==='admin'){
+      document.getElementById('user-role').textContent='Direction';
+    } else {
+      document.getElementById('user-role').textContent=`Prof. ${AUTH.matiere} · ${AUTH.classe}`;
+    }
+    applyRoleRestrictions();
+    applySettings();
+    renderDashboard();
+    buildClassTabs('class-tabs-notes','N');
+    buildClassTabs('class-tabs-bulletins','B');
+    updateDate();
+    if(AUTH.role==='prof'){ showPage('notes'); }
+  }catch(err){
+    clearAuth(); AUTH=null;
+    showAuthScreen();
+    setAuthError(err.message);
+  }
+}
+
+function applyRoleRestrictions(){
+  const isAdmin = AUTH.role==='admin';
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    const onclick = item.getAttribute('onclick')||'';
+    const isNotesItem = onclick.includes("'notes'");
+    item.style.display = (isAdmin || isNotesItem) ? '' : 'none';
+  });
+  const paCard = document.getElementById('card-prof-access');
+  if(paCard) paCard.style.display = isAdmin ? '' : 'none';
+
+  if(!isAdmin){
+    // Verrouille la classe et la matière du professeur sur la page "Saisie des notes"
+    // (exécuté après les buildClassTabs()/showPage() de initApp, qui réinitialisent currentClasse)
+    setTimeout(()=>{
+      currentClasse = AUTH.classe;
+      document.querySelectorAll('#class-tabs-notes .class-tab').forEach(t=>{
+        t.classList.remove('active');
+        if(t.textContent.trim()!==AUTH.classe) t.style.display='none';
+        else t.classList.add('active');
+      });
+      document.getElementById('classe-label').textContent=`📚 Classe de ${AUTH.classe}`;
+      renderMatieres();
+      openMatiere(AUTH.matiere);
+    },0);
+  } else {
+    renderProfAccess();
+  }
+}
+
+// ── Écran d'authentification ──
+function switchAuthTab(tab){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.auth-panel').forEach(p=>p.classList.remove('active'));
+  setAuthError('');
+  if(tab==='admin'){
+    document.getElementById('tab-admin').classList.add('active');
+    document.getElementById('panel-admin-login').classList.add('active');
+  } else if(tab==='register'){
+    document.getElementById('tab-admin').classList.add('active');
+    document.getElementById('panel-admin-register').classList.add('active');
+  } else {
+    document.getElementById('tab-prof').classList.add('active');
+    document.getElementById('panel-prof-login').classList.add('active');
+    loadProfLoginOptions();
+  }
+}
+
+function setAuthError(msg){
+  const el=document.getElementById('auth-error');
+  if(msg){ el.textContent='⚠️ '+msg; el.classList.add('visible'); }
+  else { el.textContent=''; el.classList.remove('visible'); }
+}
+
+function showAuthScreen(){
+  document.getElementById('auth-screen').style.display='flex';
+  document.querySelector('.layout').classList.remove('app-ready');
+}
+
+async function doLoginAdmin(){
+  setAuthError('');
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!email||!password){ setAuthError('Veuillez remplir tous les champs.'); return; }
+  try{
+    const data = await apiFetch('/api/login',{method:'POST',body:JSON.stringify({email,password})});
+    AUTH = { token:data.token, role:'admin', etabId:data.etab.id, etabNom:data.etab.nom };
+    saveAuth(AUTH);
+    initApp();
+  }catch(err){ setAuthError(err.message); }
+}
+
+async function doRegister(){
+  setAuthError('');
+  const nom=document.getElementById('reg-nom').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const password=document.getElementById('reg-password').value;
+  if(!nom||!email||!password){ setAuthError('Veuillez remplir tous les champs.'); return; }
+  try{
+    const data = await apiFetch('/api/etablissements',{method:'POST',body:JSON.stringify({nom,email,password})});
+    AUTH = { token:data.token, role:'admin', etabId:data.etab.id, etabNom:data.etab.nom };
+    saveAuth(AUTH);
+    initApp();
+  }catch(err){ setAuthError(err.message); }
+}
+
+async function loadProfLoginOptions(){
+  try{
+    const etabs = await apiFetch('/api/etablissements');
+    const sel=document.getElementById('prof-etab');
+    sel.innerHTML = etabs.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('') || '<option value="">Aucun établissement créé</option>';
+  }catch(e){}
+  const clSel=document.getElementById('prof-classe');
+  clSel.innerHTML = CLASSES.map(c=>`<option value="${c}">${c}</option>`).join('');
+  fillProfMatieres();
+}
+function fillProfMatieres(){
+  const cl=document.getElementById('prof-classe').value;
+  const mats=MATIERES_CONFIG[cl]||[];
+  document.getElementById('prof-matiere').innerHTML = mats.map(m=>`<option value="${m.nom}">${m.nom}</option>`).join('');
+}
+
+async function doLoginProf(){
+  setAuthError('');
+  const etablissementId = parseInt(document.getElementById('prof-etab').value);
+  const classe = document.getElementById('prof-classe').value;
+  const matiere = document.getElementById('prof-matiere').value;
+  const password = document.getElementById('prof-password').value;
+  if(!etablissementId||!classe||!matiere||!password){ setAuthError('Veuillez remplir tous les champs.'); return; }
+  try{
+    const data = await apiFetch('/api/login-prof',{method:'POST',body:JSON.stringify({etablissementId,classe,matiere,password})});
+    AUTH = { token:data.token, role:'prof', etabId:data.etab.id, etabNom:data.etab.nom, classe:data.classe, matiere:data.matiere };
+    saveAuth(AUTH);
+    initApp();
+  }catch(err){ setAuthError(err.message); }
+}
+
+function logout(){
+  clearAuth(); AUTH=null;
+  location.reload();
+}
+
+// ── Gestion des accès professeurs (direction) ──
+async function renderProfAccess(){
+  const wrap=document.getElementById('pa-class-tabs');
+  if(!wrap) return;
+  if(!wrap.dataset.built){
+    wrap.innerHTML = CLASSES.map((c,i)=>`<div class="class-tab ${i===0?'active':''}" onclick="selectPaClasse('${c}',this)">${c}</div>`).join('');
+    wrap.dataset.built='1';
+    wrap.dataset.classe = CLASSES[0];
+  }
+  await buildPaTable(wrap.dataset.classe||CLASSES[0]);
+}
+function selectPaClasse(cl, el){
+  document.querySelectorAll('#pa-class-tabs .class-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pa-class-tabs').dataset.classe = cl;
+  buildPaTable(cl);
+}
+async function buildPaTable(classe){
+  let existants=[];
+  try{ existants = await apiFetch('/api/prof-access'); }catch(e){}
+  const setActifs = new Set(existants.filter(r=>r.classe===classe).map(r=>r.matiere));
+  const mats = MATIERES_CONFIG[classe]||[];
+  document.getElementById('pa-tbody').innerHTML = mats.map(m=>{
+    const actif = setActifs.has(m.nom);
+    return `<tr>
+      <td style="font-size:0.83rem;font-weight:600;">${m.nom}</td>
+      <td>${actif?'<span class="badge badge-green">✅ Configuré</span>':'<span class="badge badge-red">Non configuré</span>'}</td>
+      <td><input class="prof-access-row-input" type="password" placeholder="Mot de passe" id="pa-pass-${classe}-${m.nom}"></td>
+      <td style="display:flex;gap:5px;">
+        <button class="btn btn-primary btn-sm" onclick="setProfAccess('${classe}','${m.nom}')">💾</button>
+        ${actif?`<button class="btn btn-outline btn-sm" onclick="removeProfAccess('${classe}','${m.nom}')">✕</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+async function setProfAccess(classe, matiere){
+  const inp=document.getElementById(`pa-pass-${classe}-${matiere}`);
+  const password=inp.value;
+  if(!password||password.length<4){ toast('⚠️ Mot de passe trop court (min. 4 caractères).','warning'); return; }
+  try{
+    await apiFetch('/api/prof-access',{method:'POST',body:JSON.stringify({classe,matiere,password})});
+    toast(`✅ Accès défini pour ${matiere} — ${classe}`,'success');
+    buildPaTable(classe);
+  }catch(err){ toast('❌ '+err.message,'warning'); }
+}
+async function removeProfAccess(classe, matiere){
+  if(!confirm(`Retirer l'accès professeur pour ${matiere} (${classe}) ?`)) return;
+  try{
+    await apiFetch('/api/prof-access',{method:'DELETE',body:JSON.stringify({classe,matiere})});
+    toast('🗑️ Accès retiré.','success');
+    buildPaTable(classe);
+  }catch(err){ toast('❌ '+err.message,'warning'); }
+}
+
+// ═══════════════════════════════════
+// DATE
+// ═══════════════════════════════════
+function updateDate(){
+  const now = new Date();
+  const J=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const str=`${J[now.getDay()]} ${now.getDate()} ${M[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('sidebar-date').textContent=str;
+  document.getElementById('topbar-date').textContent=str;
+  document.getElementById('badge-mois').textContent=`📅 ${APP.params.mois} ${now.getFullYear()}`;
+}
+updateDate();
+setInterval(updateDate,60000);
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+const PAGE_TITLES={
+  dashboard:'Tableau de bord',notes:'Saisie des notes',bulletins:'Bulletins du mois',
+  historique:'Historique & évolution',envoi:'Envoi WhatsApp',classement:'Classement',eleves:'Gestion des élèves',
+  parents:'Gestion des parents',parametres:'Paramètres'
+};
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||id;
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    if((item.getAttribute('onclick')||'').includes("'"+id+"'")) item.classList.add('active');
+  });
+  if(id==='notes')      { buildClassTabs('class-tabs-notes','N'); renderMatieres(); }
+  if(id==='bulletins')  { buildClassTabs('class-tabs-bulletins','B'); renderBulletins(); }
+  if(id==='historique') { buildClassTabs('class-tabs-historique','H'); renderHistorique(); }
+  if(id==='envoi')      renderEnvoi();
+  if(id==='classement') renderClassement();
+  if(id==='eleves')     renderEleves();
+  if(id==='parents')    renderParents();
+  if(id==='dashboard')  renderDashboard();
+  if(id==='parametres'){ initParams(); if(AUTH && AUTH.role==='admin') renderProfAccess(); }
+}
+
+function buildClassTabs(cid, type){
+  document.getElementById(cid).innerHTML=CLASSES.map((cl,i)=>
+    `<div class="class-tab ${i===0?'active':''}" onclick="${type==='N'?'selectN':type==='B'?'selectB':'selectH'}('${cl}',this)">${cl}</div>`
+  ).join('');
+  if(type==='N'){ currentClasse=CLASSES[0]; currentMatiere=null; document.getElementById('classe-label').textContent='📚 Choisissez une matière'; document.getElementById('note-panel').classList.remove('visible'); }
+  if(type==='B'){ bulletinClasse=CLASSES[0]; }
+  if(type==='H'){ historiqueClasse=CLASSES[0]; }
+}
+
+function selectN(cl,el){
+  currentClasse=cl; currentMatiere=null;
+  document.querySelectorAll('#class-tabs-notes .class-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('classe-label').textContent=`📚 Classe de ${cl} — Choisissez une matière`;
+  document.getElementById('note-panel').classList.remove('visible');
+  renderMatieres();
+}
+
+function selectB(cl,el){
+  bulletinClasse=cl;
+  document.querySelectorAll('#class-tabs-bulletins .class-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderBulletins();
+}
+
+function selectH(cl,el){
+  historiqueClasse=cl;
+  document.querySelectorAll('#class-tabs-historique .class-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderHistorique();
+}
+
+// ═══════════════════════════════════
+// MATIÈRES & NOTES
+// ═══════════════════════════════════
+function getMois(){ return APP.params.mois||'Juin'; }
+
+function renderMatieres(){
+  const grid=document.getElementById('matieres-grid');
+  let mats=MATIERES_CONFIG[currentClasse]||[];
+  if(AUTH && AUTH.role==='prof'){ mats = mats.filter(m=>m.nom===AUTH.matiere); }
+  const mois=getMois();
+  grid.innerHTML=mats.map(m=>{
+    const elevesCl=eleves.filter(e=>e.classe===currentClasse);
+    const hasN=elevesCl.some(e=>(notes[e.id]?.[mois]?.[m.nom]||[]).length>0);
+    const sel=currentMatiere===m.nom;
+    const icon=ICONS_MAT[m.nom]?`<span style="color:var(--primary);display:flex;align-items:center;">${ICONS_MAT[m.nom]}</span>`:`<span>${EMOJI_MAT[m.nom]||'📌'}</span>`;
+    return `<div class="matiere-card${hasN?' has-notes':''}${sel?' selected':''}" onclick="openMatiere('${m.nom}')">
+      <div class="mat-icon-wrap">${icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="matiere-name">${m.nom}</div>
+        <div class="matiere-coeff">Coeff. ${m.coeff}${hasN?' · ✅':''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function isMoisLocked(){
+  const limJour = APP.params.dateLimiteJour;
+  if(!limJour || limJour<=0) return false;
+  const moisIdx = MOIS_ORDRE.indexOf(getMois());
+  const now = new Date();
+  // Verrouillé si on est dans un mois STRICTEMENT après le mois courant configuré + jour limite dépassé
+  // Logique simple : verrouillé si la date du jour > dateLimiteJour ET on a changé de mois calendaire
+  const moisActuelCal = now.getMonth(); // 0-11
+  const moisNomsToIdx = {0:'Janvier',1:'Février',2:'Mars',3:'Avril',4:'Mai',5:'Juin',6:'Juillet',7:'Août',8:'Septembre',9:'Octobre',10:'Novembre',11:'Décembre'};
+  const moisConfigEstMoisCal = moisNomsToIdx[moisActuelCal] === getMois();
+  if(moisConfigEstMoisCal) return false; // on est dans le mois en cours, jamais verrouillé
+  return true; // le mois sélectionné n'est plus le mois calendaire courant => verrouillé après la période
+}
+
+function openMatiere(matiere){
+  currentMatiere=matiere;
+  const cfg=(MATIERES_CONFIG[currentClasse]||[]).find(m=>m.nom===matiere);
+  document.getElementById('note-panel').classList.add('visible');
+  const icon=EMOJI_MAT[matiere]||'✏️';
+  const locked = isMoisLocked();
+  document.getElementById('note-panel-title').innerHTML=
+    `${icon} <span>${matiere}</span> — ${currentClasse} &nbsp;<span style="font-size:0.75rem;color:var(--text2);font-weight:400;">(Coeff. ${cfg?cfg.coeff:1})</span>` +
+    (locked?` <span class="badge badge-red" style="margin-left:6px;">🔒 Mois verrouillé</span>`:'');
+
+  const elevesCl=eleves.filter(e=>e.classe===currentClasse);
+  const rows=document.getElementById('note-rows');
+  const mois=getMois();
+
+  if(!elevesCl.length){
+    rows.innerHTML=`<div class="empty-state"><div class="empty-icon">👨‍🎓</div><div class="empty-text">Aucun élève dans cette classe.</div></div>`;
+    return;
+  }
+
+  rows.innerHTML=elevesCl.map(e=>{
+    const isConduite=matiere==='Conduite';
+    const notesList=notes[e.id]?.[mois]?.[matiere]||[];
+    const chips=notesList.map((n,i)=>
+      `<span class="note-chip"><span class="note-chip-val">${n}/20</span>${locked?'':`<button class="note-chip-del" onclick="deleteNote(${e.id},'${matiere}',${i})">×</button>`}</span>`
+    ).join('');
+    const defVal=isConduite&&notesList.length===0?(cfg?.defaut??''):'';
+    const apTxt = appreciations[e.id]?.[mois]?.[matiere] || '';
+    return `<div class="eleve-note-row" id="row-${e.id}">
+      <div class="eleve-note-header">
+        <div class="eleve-note-name">👤 ${e.nom}</div>
+        <div style="font-size:0.76rem;color:var(--text2);" id="cnt-${e.id}">${notesList.length} note(s)${notesList.length>0?' · Moy: '+( notesList.reduce((a,b)=>a+b,0)/notesList.length).toFixed(2)+'/20':''}</div>
+      </div>
+      <div class="notes-list" id="chips-${e.id}">${chips}</div>
+      <div class="add-note-row">
+        <input class="note-input" type="number" min="0" max="20" step="0.25"
+          id="ninp-${e.id}" value="${defVal}" placeholder="Note" ${locked?'disabled':''}
+          onkeydown="if(event.key==='Enter')addNote(${e.id},'${matiere}')">
+        <span class="note-sur">/ 20</span>
+        <button class="btn btn-primary btn-sm" onclick="addNote(${e.id},'${matiere}')" ${locked?'disabled':''}>➕ Ajouter</button>
+      </div>
+      <div style="margin-top:7px;">
+        <input class="form-input" style="font-size:0.78rem;padding:6px 10px;" placeholder="💬 Appréciation du professeur (optionnel)"
+          id="apinp-${e.id}" value="${apTxt.replace(/"/g,'&quot;')}" ${locked?'disabled':''}
+          onblur="saveAppreciation(${e.id},'${matiere}',this.value)">
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('note-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  renderMatieres();
+}
+
+function addNote(eleveId, matiere){
+  if(isMoisLocked()){ toast('🔒 Ce mois est verrouillé. Modification impossible.','warning'); return; }
+  const inp=document.getElementById('ninp-'+eleveId);
+  const val=parseFloat(inp.value);
+  if(isNaN(val)||val<0||val>20){toast('⚠️ Note invalide (0–20)','warning');return;}
+  const mois=getMois();
+  if(!notes[eleveId]) notes[eleveId]={};
+  if(!notes[eleveId][mois]) notes[eleveId][mois]={};
+  if(!notes[eleveId][mois][matiere]) notes[eleveId][mois][matiere]=[];
+  notes[eleveId][mois][matiere].push(val);
+  inp.value='';
+  saveData();
+  // refresh chips inline
+  const notesList=notes[eleveId][mois][matiere];
+  document.getElementById('chips-'+eleveId).innerHTML=notesList.map((n,i)=>
+    `<span class="note-chip"><span class="note-chip-val">${n}/20</span><button class="note-chip-del" onclick="deleteNote(${eleveId},'${matiere}',${i})">×</button></span>`
+  ).join('');
+  const moy=(notesList.reduce((a,b)=>a+b,0)/notesList.length).toFixed(2);
+  document.getElementById('cnt-'+eleveId).textContent=`${notesList.length} note(s) · Moy: ${moy}/20`;
+  renderMatieres();
+  updateDashStats();
+  toast(`✅ ${val}/20 ajouté pour ${eleves.find(e=>e.id===eleveId)?.nom}`,'success');
+}
+
+function deleteNote(eleveId, matiere, idx){
+  if(isMoisLocked()){ toast('🔒 Ce mois est verrouillé. Modification impossible.','warning'); return; }
+  const mois=getMois();
+  notes[eleveId]?.[mois]?.[matiere]?.splice(idx,1);
+  saveData(); openMatiere(matiere); updateDashStats();
+}
+
+function saveAppreciation(eleveId, matiere, texte){
+  const mois=getMois();
+  if(!appreciations[eleveId]) appreciations[eleveId]={};
+  if(!appreciations[eleveId][mois]) appreciations[eleveId][mois]={};
+  appreciations[eleveId][mois][matiere]=texte;
+  APP.appreciations=appreciations;
+  saveData();
+}
+
+function saveNotes(){ saveData(); toast('💾 Notes enregistrées.','success'); }
+
+function closeNotePanel(){
+  document.getElementById('note-panel').classList.remove('visible');
+  currentMatiere=null; renderMatieres();
+}
+
+// ═══════════════════════════════════
+// CALCUL MOYENNE PONDÉRÉE
+// ═══════════════════════════════════
+function calcMoyenne(eleveId, mois){
+  const ns=notes[eleveId]?.[mois]||{};
+  const classe=eleves.find(e=>e.id===eleveId)?.classe;
+  const mats=MATIERES_CONFIG[classe]||[];
+  let pts=0,coeff=0;
+  mats.forEach(m=>{
+    const arr=ns[m.nom];
+    if(arr&&arr.length>0){
+      pts+=(arr.reduce((a,b)=>a+b,0)/arr.length)*m.coeff;
+      coeff+=m.coeff;
+    }
+  });
+  return coeff===0?null:(pts/coeff);
+}
+
+// ═══════════════════════════════════
+// BULLETINS
+// ═══════════════════════════════════
+function renderBulletins(){
+  const c=document.getElementById('bulletins-container');
+  const mois=getMois();
+  const cl=eleves.filter(e=>e.classe===bulletinClasse);
+  const avec=cl.filter(e=>Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+  if(!avec.length){
+    c.innerHTML=`<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Aucun bulletin pour la classe de ${bulletinClasse}.</div></div></div></div>`;
+    return;
+  }
+  c.innerHTML=avec.map(e=>buildBulletin(e)).join('');
+}
+
+function buildBulletin(e){
+  const mois=getMois();
+  const mats=MATIERES_CONFIG[e.classe]||[];
+  const ns=notes[e.id]?.[mois]||{};
+  const moy=calcMoyenne(e.id,mois);
+  const moyStr=moy!==null?moy.toFixed(2):'—';
+  const moyColor=moy===null?'':moy>=14?'note-good':moy>=10?'note-avg':'note-bad';
+
+  const rows=mats.filter(m=>(ns[m.nom]||[]).length>0).map(m=>{
+    const arr=ns[m.nom];
+    const moyM=arr.reduce((a,b)=>a+b,0)/arr.length;
+    const cls=moyM>=14?'note-good':moyM>=10?'note-avg':'note-bad';
+    const app=moyM>=16?'Excellent':moyM>=14?'Très bien':moyM>=12?'Bien':moyM>=10?'Assez bien':moyM>=8?'Passable':'Insuffisant';
+    const bCl=moyM>=14?'badge-green':moyM>=10?'badge-or':'badge-red';
+    const ic=EMOJI_MAT[m.nom]||'📌';
+    return `<tr>
+      <td>${ic} ${m.nom}</td>
+      <td style="font-size:0.73rem;color:var(--text2);">${m.coeff}</td>
+      <td style="font-size:0.76rem;color:var(--text2);">${arr.join(' · ')}</td>
+      <td class="note-cell ${cls}">${moyM.toFixed(2)}</td>
+      <td><span class="badge ${bCl}">${app}</span></td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="bulletin-preview">
+    <div class="bulletin-header">
+      <div>
+        <div class="bulletin-school">${APP.params.ecole} — Année ${APP.params.annee}</div>
+        <div class="bulletin-eleve-name">${e.nom}</div>
+        <div class="bulletin-meta">Classe de ${e.classe} &nbsp;·&nbsp; ${mois} ${new Date().getFullYear()}</div>
+      </div>
+      <div class="bulletin-badge">${mois}</div>
+    </div>
+    <div class="bulletin-body">
+      <table>
+        <thead><tr><th>Matière</th><th>Coeff.</th><th>Notes saisies</th><th>Moyenne mat.</th><th>Appréciation</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="bulletin-footer">
+      <div>
+        <div class="moyenne-label" style="margin-bottom:2px;">Moyenne générale pondérée</div>
+        <div class="moyenne-val ${moyColor}">${moyStr}<span style="font-size:0.88rem;font-weight:400;color:var(--text2);"> / 20</span></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="downloadBulletinPDF(${e.id})">📄 PDF</button>
+        <button class="btn btn-wa btn-sm" onclick="sendWhatsApp(${e.id})">📱 Envoyer à ${e.parent}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// HISTORIQUE MULTI-MOIS & ALERTES
+// ═══════════════════════════════════
+function getMoisAvecDonnees(eleveId){
+  const ms = notes[eleveId] || {};
+  return MOIS_ORDRE.filter(m => Object.values(ms[m]||{}).some(a=>a.length>0));
+}
+
+function renderHistorique(){
+  document.getElementById('hist-classe-label').textContent = historiqueClasse;
+  const cl = eleves.filter(e=>e.classe===historiqueClasse);
+
+  // déterminer tous les mois ayant des données pour cette classe
+  let moisSet = new Set();
+  cl.forEach(e => getMoisAvecDonnees(e.id).forEach(m=>moisSet.add(m)));
+  const moisListe = MOIS_ORDRE.filter(m=>moisSet.has(m));
+
+  if(!moisListe.length){
+    document.getElementById('hist-mois-headers').innerHTML = '';
+    document.getElementById('historique-tbody').innerHTML =
+      `<tr><td colspan="2" style="text-align:center;padding:28px;color:var(--text2);">Aucune donnée historique pour la classe de ${historiqueClasse} encore.</td></tr>`;
+  } else {
+    // En-têtes (un th par mois)
+    const theadRow = document.querySelector('#page-historique table thead tr');
+    theadRow.innerHTML = '<th>Élève</th>' + moisListe.map(m=>`<th style="text-align:center;">${m}</th>`).join('') + '<th style="text-align:center;">Tendance</th>';
+
+    document.getElementById('historique-tbody').innerHTML = cl.map(e=>{
+      const moyennes = moisListe.map(m=>calcMoyenne(e.id,m));
+      const cells = moyennes.map(moy=>{
+        if(moy===null) return `<td style="text-align:center;color:var(--text2);">—</td>`;
+        const cls = moy>=14?'note-good':moy>=10?'note-avg':'note-bad';
+        return `<td style="text-align:center;" class="note-cell ${cls}">${moy.toFixed(2)}</td>`;
+      }).join('');
+      // tendance : comparer dernière et première moyenne disponible
+      const valeurs = moyennes.filter(m=>m!==null);
+      let tendance = '—';
+      if(valeurs.length>=2){
+        const diff = valeurs[valeurs.length-1] - valeurs[0];
+        if(diff > 0.5) tendance = `<span style="color:#1a6b3c;">▲ +${diff.toFixed(1)}</span>`;
+        else if(diff < -0.5) tendance = `<span style="color:#c0392b;">▼ ${diff.toFixed(1)}</span>`;
+        else tendance = `<span style="color:var(--text2);">▬ stable</span>`;
+      }
+      return `<tr><td><strong>${e.nom}</strong></td>${cells}<td style="text-align:center;">${tendance}</td></tr>`;
+    }).join('');
+  }
+
+  // ALERTES DÉCROCHAGE — chute significative ou moyenne basse persistante
+  let alertesHtml = '';
+  eleves.forEach(e=>{
+    const moisE = getMoisAvecDonnees(e.id);
+    if(moisE.length < 2) return;
+    const moyennes = moisE.map(m=>({mois:m, moy:calcMoyenne(e.id,m)})).filter(x=>x.moy!==null);
+    if(moyennes.length < 2) return;
+    const derniere = moyennes[moyennes.length-1];
+    const precedente = moyennes[moyennes.length-2];
+    const chute = precedente.moy - derniere.moy;
+    if(chute >= 2.5){
+      alertesHtml += `<div class="envoi-card" style="border-left:3px solid var(--rouge);">
+        <div>
+          <div class="envoi-name">⚠️ ${e.nom} <span class="tag">${e.classe}</span></div>
+          <div class="envoi-parent">Chute de moyenne : ${precedente.moy.toFixed(2)}/20 (${precedente.mois}) → ${derniere.moy.toFixed(2)}/20 (${derniere.mois}) — soit <strong style="color:var(--rouge);">-${chute.toFixed(2)} pts</strong></div>
+        </div>
+      </div>`;
+    } else if(derniere.moy < 8){
+      alertesHtml += `<div class="envoi-card" style="border-left:3px solid var(--gold);">
+        <div>
+          <div class="envoi-name">⚠️ ${e.nom} <span class="tag">${e.classe}</span></div>
+          <div class="envoi-parent">Moyenne faible persistante : ${derniere.moy.toFixed(2)}/20 en ${derniere.mois}</div>
+        </div>
+      </div>`;
+    }
+  });
+  document.getElementById('alertes-decrochage').innerHTML = alertesHtml ||
+    `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">Aucune alerte de décrochage détectée.</div></div>`;
+}
+
+
+function generateBulletinPDF(eleveId, mois){
+  const e = eleves.find(x=>x.id===eleveId);
+  if(!e) return null;
+  mois = mois || getMois();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const W = 210, H = 297;
+  const kaki = [90,107,62];
+  const kakiD = [58,70,40];
+  const gold = [200,149,42];
+  const grayTxt = [90,102,80];
+
+  // ───── PAGE DE COUVERTURE ─────
+  doc.setFillColor(255,255,255);
+  doc.rect(0,0,W,H,'F');
+  // bande kaki en haut
+  doc.setFillColor(...kaki);
+  doc.rect(0,0,W,72,'F');
+  doc.setFillColor(...gold);
+  doc.rect(0,72,W,3,'F');
+
+  // Cadre décoratif fin
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.8);
+  doc.rect(8,8,W-16,H-16);
+
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.text("RÉPUBLIQUE DU NIGER", W/2, 16, {align:'center'});
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.text("MINISTÈRE DE L'ÉDUCATION NATIONALE", W/2, 22, {align:'center'});
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(22);
+  doc.text("LYCÉE D'EXCELLENCE", W/2, 38, {align:'center'});
+  doc.text("DE TESSAOUA", W/2, 48, {align:'center'});
+
+  doc.setFont('helvetica','italic');
+  doc.setFontSize(10);
+  doc.text(DEVISE_ECOLE, W/2, 60, {align:'center'});
+
+  // Titre du document
+  doc.setTextColor(...kakiD);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(15);
+  doc.text("BULLETIN MENSUEL DE NOTES", W/2, 92, {align:'center'});
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.6);
+  doc.line(W/2-45, 97, W/2+45, 97);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(11);
+  doc.setTextColor(...grayTxt);
+  doc.text(`${mois} ${new Date().getFullYear()} — Année scolaire ${APP.params.annee}`, W/2, 105, {align:'center'});
+
+  // Cadre infos élève
+  doc.setFillColor(241,244,236);
+  doc.roundedRect(35, 125, W-70, 60, 3, 3, 'F');
+  doc.setDrawColor(...kaki);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(35, 125, W-70, 60, 3, 3);
+
+  doc.setTextColor(...kakiD);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text("ÉLÈVE", 45, 137);
+  doc.setFontSize(15);
+  doc.text(e.nom, 45, 147);
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text("CLASSE", 45, 160);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(12);
+  doc.text(e.classe, 45, 168);
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text("RESPONSABLE", 120, 160);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(11);
+  doc.text(e.parent, 120, 168);
+
+  // Moyenne mise en valeur
+  const moy = calcMoyenne(e.id, mois);
+  doc.setFillColor(...gold);
+  doc.circle(W/2, 210, 22, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(20);
+  doc.text(moy!==null?moy.toFixed(2):'—', W/2, 213, {align:'center'});
+  doc.setFontSize(8);
+  doc.text("/ 20", W/2, 219, {align:'center'});
+  doc.setTextColor(...grayTxt);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text("MOYENNE GÉNÉRALE PONDÉRÉE", W/2, 240, {align:'center'});
+
+  doc.setFontSize(8.5);
+  doc.setTextColor(150,150,150);
+  doc.text(`Document généré le ${new Date().toLocaleDateString('fr-FR')} via SuiviScolaire`, W/2, H-15, {align:'center'});
+
+  // ───── PAGE 2 : DÉTAIL DES NOTES ─────
+  doc.addPage();
+  doc.setFillColor(...kaki);
+  doc.rect(0,0,W,24,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.text(`Bulletin de ${e.nom}`, 14, 15);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text(`${e.classe} — ${mois} ${new Date().getFullYear()}`, W-14, 15, {align:'right'});
+
+  let y = 36;
+  doc.setTextColor(...kakiD);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.text("Résultats par matière", 14, y);
+  y += 8;
+
+  // Table header
+  const mats = MATIERES_CONFIG[e.classe]||[];
+  const ns = notes[e.id]?.[mois]||{};
+  const aps = appreciations[e.id]?.[mois]||{};
+  doc.setFillColor(...kaki);
+  doc.rect(14, y-5, W-28, 8, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica','bold');
+  doc.text("MATIÈRE", 17, y);
+  doc.text("COEF.", 95, y);
+  doc.text("NOTES", 112, y);
+  doc.text("MOY.", 150, y);
+  doc.text("APPRÉCIATION", 165, y);
+  y += 7;
+
+  let i=0;
+  mats.filter(m=>(ns[m.nom]||[]).length>0).forEach(m=>{
+    const arr = ns[m.nom];
+    const moyM = arr.reduce((a,b)=>a+b,0)/arr.length;
+    const app = moyM>=16?'Excellent':moyM>=14?'Très bien':moyM>=12?'Bien':moyM>=10?'Assez bien':moyM>=8?'Passable':'Insuffisant';
+    if(i%2===0){ doc.setFillColor(241,244,236); doc.rect(14, y-5, W-28, 8, 'F'); }
+    doc.setTextColor(...kakiD);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8.5);
+    doc.text(m.nom, 17, y);
+    doc.text(String(m.coeff), 95, y);
+    doc.setFontSize(7.5);
+    doc.text(arr.join(', '), 112, y, {maxWidth:36});
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica','bold');
+    const c = moyM>=14?[26,107,60]:moyM>=10?[200,149,42]:[192,57,43];
+    doc.setTextColor(...c);
+    doc.text(moyM.toFixed(2), 150, y);
+    doc.setTextColor(...grayTxt);
+    doc.setFont('helvetica','normal');
+    doc.text(app, 165, y);
+    y += 8;
+    i++;
+    // appréciation prof si présente
+    const txt = aps[m.nom];
+    if(txt && txt.trim()){
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica','italic');
+      doc.setTextColor(110,120,100);
+      const lines = doc.splitTextToSize(`Note du professeur : ${txt}`, W-36);
+      doc.text(lines, 19, y);
+      y += lines.length*4 + 2;
+    }
+    if(y > H-40){ doc.addPage(); y=20; }
+  });
+
+  y += 6;
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.5);
+  doc.line(14, y, W-14, y);
+  y += 10;
+
+  doc.setFillColor(241,244,236);
+  doc.roundedRect(14, y-7, W-28, 16, 2, 2, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...kakiD);
+  doc.text("MOYENNE GÉNÉRALE PONDÉRÉE", 19, y+2);
+  doc.setFontSize(14);
+  const moyC = moy>=14?[26,107,60]:moy>=10?[200,149,42]:[192,57,43];
+  doc.setTextColor(...moyC);
+  doc.text(`${moy!==null?moy.toFixed(2):'—'} / 20`, W-19, y+2, {align:'right'});
+
+  // Footer devise
+  doc.setFont('helvetica','italic');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...grayTxt);
+  doc.text(DEVISE_ECOLE, W/2, H-20, {align:'center'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(150,150,150);
+  doc.text("Lycée d'Excellence de Tessaoua — SuiviScolaire", W/2, H-14, {align:'center'});
+
+  return doc;
+}
+
+function downloadBulletinPDF(eleveId){
+  const e = eleves.find(x=>x.id===eleveId);
+  const mois = getMois();
+  if(!Object.values(notes[eleveId]?.[mois]||{}).some(a=>a.length>0)){
+    toast('⚠️ Aucune note pour cet élève ce mois.','warning'); return;
+  }
+  if(typeof window.jspdf === 'undefined'){
+    toast('⚠️ La bibliothèque PDF n\'a pas pu se charger (vérifiez votre connexion internet).','warning');
+    return;
+  }
+  try{
+    const doc = generateBulletinPDF(eleveId, mois);
+    savePdfBlob(doc, `Bulletin_${e.nom.replace(/\s+/g,'_')}_${mois}.pdf`);
+    toast(`📄 PDF généré pour ${e.nom}`,'success');
+  }catch(err){
+    console.error(err);
+    toast('❌ Erreur lors de la génération du PDF.','warning');
+  }
+}
+
+// Téléchargement robuste via Blob — fonctionne même quand doc.save() est bloqué
+// (fichiers ouverts en file://, certains navigateurs mobiles, etc.)
+function savePdfBlob(doc, filename){
+  const blob = doc.output('blob');
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1000);
+}
+
+
+function renderEnvoi(){
+  const mois=getMois();
+  const avec=eleves.filter(e=>Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+  const sans=eleves.filter(e=>!Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+  let html='';
+  if(avec.length){
+    html+=`<div class="section-label" style="color:var(--primary);">✅ Bulletins prêts (${avec.length})</div>`;
+    html+=avec.map(e=>{
+      const moy=calcMoyenne(e.id,mois);
+      const statut=getStatutEnvoi(e.id,mois);
+      let statutHtml='';
+      if(statut){
+        const d=new Date(statut.date);
+        const dStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        if(statut.statut==='vu') statutHtml=`<span class="badge badge-green" style="margin-left:6px;">✓✓ Vu</span>`;
+        else statutHtml=`<span class="badge badge-blue" style="margin-left:6px;cursor:pointer;" onclick="marquerVu(${e.id},'${mois}')" title="Cliquer pour marquer comme vu">✓ Envoyé ${dStr}</span>`;
+      }
+      return `<div class="envoi-card">
+        <div>
+          <div class="envoi-name">👤 ${e.nom} <span class="tag">${e.classe}</span>${statutHtml}</div>
+          <div class="envoi-parent">👨‍👩‍👧 ${e.parent} · ${e.tel}${moy!==null?' · Moy: <strong>'+moy.toFixed(2)+'/20</strong>':''}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="downloadBulletinPDF(${e.id})">📄</button>
+          <button class="btn btn-wa btn-sm" onclick="sendWhatsApp(${e.id})">📱 Envoyer</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  if(sans.length){
+    html+=`<div class="section-label" style="color:var(--gold);margin-top:13px;">⚠️ Ignorés — aucune note (${sans.length})</div>`;
+    html+=sans.map(e=>`<div class="envoi-card" style="opacity:0.52;">
+      <div><div class="envoi-name">👤 ${e.nom} <span class="tag">${e.classe}</span></div>
+      <div class="envoi-parent">Aucune note saisie ce mois</div></div></div>`).join('');
+  }
+  if(!eleves.length) html=`<div class="empty-state"><div class="empty-icon">📱</div><div class="empty-text">Aucun élève.</div></div>`;
+  document.getElementById('envoi-list').innerHTML=html;
+  document.getElementById('envoi-summary').innerHTML=avec.length
+    ?`<strong>${avec.length}</strong> bulletin(s) prêt(s) · <strong>${sans.length}</strong> ignoré(s)`
+    :'⚠️ Aucun bulletin — saisissez d\'abord des notes.';
+  document.getElementById('btn-send-all').disabled=!avec.length;
+}
+
+function marquerVu(eleveId, mois){
+  if(envois[eleveId]?.[mois]){ envois[eleveId][mois].statut='vu'; saveData(); renderEnvoi(); toast('✓✓ Marqué comme vu','success'); }
+}
+
+function buildMessage(e){
+  const mois=getMois();
+  const mats=MATIERES_CONFIG[e.classe]||[];
+  const ns=notes[e.id]?.[mois]||{};
+  const moy=calcMoyenne(e.id,mois);
+  let msg=`Bonjour ${e.parent},\n\n`;
+  msg+=`📋 *Bulletin de ${e.nom}* — ${mois} ${new Date().getFullYear()}\n`;
+  msg+=`Classe de ${e.classe} | ${APP.params.ecole}\n\n`;
+  msg+=`*Résultats :*\n`;
+  mats.filter(m=>(ns[m.nom]||[]).length>0).forEach(m=>{
+    const arr=ns[m.nom];
+    const moyM=arr.reduce((a,b)=>a+b,0)/arr.length;
+    msg+=`${EMOJI_MAT[m.nom]||'•'} ${m.nom} (coeff.${m.coeff}) : *${moyM.toFixed(2)}/20*`;
+    if(arr.length>1) msg+=` [${arr.join(', ')}]`;
+    msg+='\n';
+  });
+  msg+=`\n📊 *Moyenne générale : ${moy!==null?moy.toFixed(2):'—'}/20*\n\n`;
+  msg+=`Cordialement,\nL'équipe pédagogique\n${APP.params.ecole}`;
+  return msg;
+}
+
+function sendWhatsApp(eleveId){
+  const e=eleves.find(x=>x.id===eleveId);
+  if(!e) return;
+  const mois=getMois();
+  const ns=notes[e.id]?.[mois]||{};
+  if(!Object.values(ns).some(a=>a.length>0)){toast('⚠️ Aucune note pour cet élève.','warning');return;}
+
+  // Étape 1 : télécharger le PDF du bulletin (si la bibliothèque est disponible)
+  let pdfOk = false;
+  if(typeof window.jspdf !== 'undefined'){
+    try{
+      const doc = generateBulletinPDF(eleveId, mois);
+      savePdfBlob(doc, `Bulletin_${e.nom.replace(/\s+/g,'_')}_${mois}.pdf`);
+      pdfOk = true;
+    }catch(err){ console.error(err); }
+  }
+
+  // Étape 2 : ouvrir WhatsApp avec le message texte pré-rempli
+  const num=e.tel.replace(/[\s\-\(\)]/g,'').replace('+','');
+  setTimeout(()=>{
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent(buildMessage(e))}`,'_blank');
+  }, pdfOk ? 400 : 0); // petit délai pour laisser le téléchargement démarrer avant d'ouvrir WhatsApp
+
+  marquerEnvoye(eleveId, mois);
+
+  if(pdfOk){
+    toast(`📄 PDF téléchargé · 📱 WhatsApp ouvert pour ${e.parent} — joignez le PDF avec 📎`,'success');
+  } else {
+    toast(`📱 WhatsApp ouvert pour ${e.parent} (PDF non disponible — vérifiez votre connexion)`,'warning');
+  }
+}
+
+function marquerEnvoye(eleveId, mois){
+  if(!envois[eleveId]) envois[eleveId]={};
+  envois[eleveId][mois]={date:new Date().toISOString(), statut:'envoye'};
+  APP.envois=envois;
+  saveData();
+}
+
+function getStatutEnvoi(eleveId, mois){
+  return envois[eleveId]?.[mois] || null;
+}
+
+// ENVOI GROUPÉ — ouvre une modal avec tous les liens listés, marque l'envoi au clic
+function sendAll(){
+  const mois=getMois();
+  const queue=eleves.filter(e=>Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+  if(!queue.length){toast('⚠️ Aucun bulletin à envoyer.','warning');return;}
+
+  document.getElementById('sendall-list').innerHTML =
+    `<div style="font-size:0.78rem;color:var(--text2);margin-bottom:10px;" id="sendall-progress">0 / ${queue.length} envoyé(s)</div>` +
+    queue.map((e,i)=>{
+    const moy=calcMoyenne(e.id,mois);
+    const statut=getStatutEnvoi(e.id,mois);
+    const deja = statut ? `<span class="badge badge-green" style="margin-left:6px;">✓ Déjà envoyé</span>` : '';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);" id="sendall-row-${e.id}">
+      <div>
+        <div style="font-weight:700;font-size:0.85rem;">${i+1}. ${e.nom} <span class="tag">${e.classe}</span>${deja}</div>
+        <div style="font-size:0.75rem;color:var(--text2);">👨‍👩‍👧 ${e.parent} · ${e.tel}${moy!==null?' · '+moy.toFixed(2)+'/20':''}</div>
+      </div>
+      <button class="btn btn-wa btn-sm" style="flex-shrink:0;" onclick="sendOneFromModal(${e.id})">📄📱 PDF + WhatsApp</button>
+    </div>`;
+  }).join('');
+
+  sendAllTotal = queue.length;
+  sendAllDone = queue.filter(e=>getStatutEnvoi(e.id,mois)).length;
+  updateSendAllProgress();
+  openModal('modal-sendall');
+}
+
+let sendAllTotal=0, sendAllDone=0;
+function updateSendAllProgress(){
+  const el=document.getElementById('sendall-progress');
+  if(el) el.textContent = `${sendAllDone} / ${sendAllTotal} envoyé(s)`;
+}
+
+// Appelé depuis la modal d'envoi groupé : télécharge le PDF puis ouvre WhatsApp pour CET élève
+function sendOneFromModal(eleveId){
+  const mois=getMois();
+  const wasNew = !getStatutEnvoi(eleveId, mois);
+  sendWhatsApp(eleveId); // télécharge le PDF + ouvre WhatsApp + marque l'envoi
+  if(wasNew){ sendAllDone++; updateSendAllProgress(); }
+  const row=document.getElementById('sendall-row-'+eleveId);
+  if(row && wasNew){
+    const titleDiv = row.querySelector('div > div');
+    if(titleDiv && !titleDiv.innerHTML.includes('Déjà envoyé')){
+      titleDiv.innerHTML += ` <span class="badge badge-green" style="margin-left:6px;">✓ Déjà envoyé</span>`;
+    }
+  }
+}
+
+function downloadAllPDF(){
+  const mois=getMois();
+  const cl = eleves.filter(e=>e.classe===bulletinClasse);
+  const avec = cl.filter(e=>Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+  if(!avec.length){ toast('⚠️ Aucun bulletin à télécharger pour cette classe.','warning'); return; }
+  if(typeof window.jspdf === 'undefined'){
+    toast('⚠️ La bibliothèque PDF n\'a pas pu se charger (vérifiez votre connexion internet).','warning');
+    return;
+  }
+  avec.forEach((e,i)=>{
+    setTimeout(()=>{
+      try{
+        const doc = generateBulletinPDF(e.id, mois);
+        savePdfBlob(doc, `Bulletin_${e.nom.replace(/\s+/g,'_')}_${mois}.pdf`);
+      }catch(err){ console.error(err); }
+    }, i*450); // léger délai pour éviter que le navigateur bloque les téléchargements multiples
+  });
+  toast(`📄 ${avec.length} PDF en cours de téléchargement...`,'success');
+}
+
+// ═══════════════════════════════════
+// CLASSEMENT
+// ═══════════════════════════════════
+function renderClassement(){
+  const mois=getMois();
+  document.getElementById('cl-mois').textContent=mois;
+  document.getElementById('cl-school').textContent=APP.params.ecole;
+  const tous=eleves.map(e=>({...e,moy:calcMoyenne(e.id,mois)})).filter(e=>e.moy!==null).sort((a,b)=>b.moy-a.moy);
+  const medals=['🥇','🥈','🥉'];
+  const pc=['p1','p2','p3'];
+
+  document.getElementById('podium-etab').innerHTML=tous.slice(0,3).length
+    ?tous.slice(0,3).map((e,i)=>`<div class="podium-card ${pc[i]}">
+        <div class="podium-medal">${medals[i]}</div>
+        <div class="podium-name">${e.nom}</div>
+        <div class="podium-classe">${e.classe}</div>
+        <div class="podium-moy">${e.moy.toFixed(2)}<span style="font-size:0.73rem;color:var(--text2);font-weight:400;">/20</span></div>
+      </div>`).join('')
+    :`<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:18px;">Aucune donnée.</div>`;
+
+  document.getElementById('classement-classes').innerHTML=CLASSES.map(cl=>{
+    const ecl=tous.filter(e=>e.classe===cl);
+    if(!ecl.length) return '';
+    return `<div class="card">
+      <div class="card-header"><div class="card-title">🏫 Classe de ${cl}</div></div>
+      <div class="card-body">
+        <div class="podium-row">${ecl.slice(0,3).map((e,i)=>`
+          <div class="podium-card ${pc[i]}">
+            <div class="podium-medal">${medals[i]}</div>
+            <div class="podium-name">${e.nom}</div>
+            <div class="podium-moy">${e.moy.toFixed(2)}/20</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // MOYENNE PAR MATIÈRE ET PAR CLASSE
+  document.getElementById('cl-mois2').textContent = mois;
+  const toutesMatieres = [...new Set(CLASSES.flatMap(cl=>(MATIERES_CONFIG[cl]||[]).map(m=>m.nom)))];
+  document.getElementById('matclasse-header').innerHTML = '<th>Matière</th>' + CLASSES.map(cl=>`<th style="text-align:center;">${cl}</th>`).join('');
+  document.getElementById('matclasse-tbody').innerHTML = toutesMatieres.map(matNom=>{
+    const cells = CLASSES.map(cl=>{
+      if(!(MATIERES_CONFIG[cl]||[]).some(m=>m.nom===matNom)) return `<td style="text-align:center;color:var(--text2);">—</td>`;
+      const elevesCl = eleves.filter(e=>e.classe===cl);
+      const moyennes = elevesCl.map(e=>{
+        const arr = notes[e.id]?.[mois]?.[matNom];
+        return arr&&arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+      }).filter(m=>m!==null);
+      if(!moyennes.length) return `<td style="text-align:center;color:var(--text2);">—</td>`;
+      const moyCl = moyennes.reduce((a,b)=>a+b,0)/moyennes.length;
+      const cls = moyCl>=14?'note-good':moyCl>=10?'note-avg':'note-bad';
+      return `<td style="text-align:center;" class="note-cell ${cls}">${moyCl.toFixed(2)}</td>`;
+    }).join('');
+    return `<tr><td><strong>${EMOJI_MAT[matNom]||'📌'} ${matNom}</strong></td>${cells}</tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// ÉLÈVES & PARENTS
+// ═══════════════════════════════════
+let eleveSearchTerm = '';
+function filterEleves(val){ eleveSearchTerm = val.toLowerCase().trim(); renderEleves(); }
+
+function renderEleves(){
+  const tb=document.getElementById('eleves-tbody');
+  let list = eleves;
+  if(eleveSearchTerm){
+    list = eleves.filter(e=>e.nom.toLowerCase().includes(eleveSearchTerm)||e.parent.toLowerCase().includes(eleveSearchTerm)||e.classe.toLowerCase().includes(eleveSearchTerm));
+  }
+  if(!list.length){tb.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:26px;color:var(--text2);">Aucun élève${eleveSearchTerm?' trouvé pour cette recherche':''}.</td></tr>`;return;}
+  tb.innerHTML=list.map(e=>`<tr>
+    <td><strong>${e.nom}</strong>${e.secoursNom?`<div style="font-size:0.68rem;color:var(--text2);margin-top:2px;">👤 Secours: ${e.secoursNom}</div>`:''}</td>
+    <td><span class="badge badge-kaki">${e.classe}</span></td>
+    <td>${e.parent}</td>
+    <td style="font-family:monospace;font-size:0.8rem;">${e.tel}</td>
+    <td style="display:flex;gap:5px;">
+      <button class="btn btn-wa btn-sm" onclick="sendWhatsApp(${e.id})">📱</button>
+      <button class="btn btn-outline btn-sm" onclick="downloadBulletinPDF(${e.id})">📄</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteEleve(${e.id})">🗑️</button>
+    </td>
+  </tr>`).join('');
+  document.getElementById('s-eleves').textContent=eleves.length;
+  document.getElementById('s-parents').textContent=eleves.length;
+}
+
+function renderParents(){
+  const tb=document.getElementById('parents-tbody');
+  let list = eleves;
+  if(eleveSearchTerm){
+    list = eleves.filter(e=>e.nom.toLowerCase().includes(eleveSearchTerm)||e.parent.toLowerCase().includes(eleveSearchTerm));
+  }
+  tb.innerHTML=list.map(e=>`<tr>
+    <td><strong>${e.parent}</strong></td>
+    <td style="font-family:monospace;font-size:0.8rem;">${e.tel}</td>
+    <td>${e.nom} <span class="tag">${e.classe}</span></td>
+    <td><button class="btn btn-wa btn-sm" onclick="sendWhatsApp(${e.id})">📱 WhatsApp</button></td>
+  </tr>${e.secoursNom?`<tr style="background:var(--bg);">
+    <td style="padding-left:24px;font-size:0.8rem;color:var(--text2);">↳ ${e.secoursNom} <span class="tag" style="background:var(--accent-pale);color:var(--accent);">Secours</span></td>
+    <td style="font-family:monospace;font-size:0.78rem;color:var(--text2);">${e.secoursTel||'—'}</td>
+    <td style="font-size:0.78rem;color:var(--text2);">${e.nom}</td>
+    <td>${e.secoursTel?`<button class="btn btn-outline btn-sm" onclick="sendWhatsAppTo('${e.secoursTel}','${e.secoursNom}',${e.id})">📱 Contacter</button>`:''}</td>
+  </tr>`:''}`).join('');
+}
+
+function sendWhatsAppTo(tel, nomContact, eleveId){
+  const e=eleves.find(x=>x.id===eleveId); if(!e) return;
+  const mois=getMois();
+  if(!Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0)){toast('⚠️ Aucune note pour cet élève.','warning');return;}
+
+  let pdfOk = false;
+  if(typeof window.jspdf !== 'undefined'){
+    try{
+      const doc = generateBulletinPDF(eleveId, mois);
+      savePdfBlob(doc, `Bulletin_${e.nom.replace(/\s+/g,'_')}_${mois}.pdf`);
+      pdfOk = true;
+    }catch(err){ console.error(err); }
+  }
+
+  const num=tel.replace(/[\s\-\(\)]/g,'').replace('+','');
+  const msg = buildMessage(e).replace(`Bonjour ${e.parent},`, `Bonjour ${nomContact},`);
+  setTimeout(()=>{
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`,'_blank');
+  }, pdfOk ? 400 : 0);
+
+  toast(pdfOk
+    ? `📄 PDF téléchargé · 📱 WhatsApp ouvert pour ${nomContact} — joignez le PDF avec 📎`
+    : `📱 WhatsApp ouvert pour ${nomContact} (PDF non disponible)`,'success');
+}
+
+function addEleve(){
+  const nom=document.getElementById('ne-nom').value.trim();
+  const classe=document.getElementById('ne-classe').value;
+  const pnom=document.getElementById('ne-pnom').value.trim();
+  const ptel=document.getElementById('ne-ptel').value.trim().replace(/[\s\-\(\)]/g,'');
+  const secoursNom=document.getElementById('ne-secnom').value.trim();
+  const secoursTel=document.getElementById('ne-sectel').value.trim().replace(/[\s\-\(\)]/g,'');
+  if(!nom||!pnom||!ptel){toast('⚠️ Remplissez tous les champs obligatoires.','warning');return;}
+  eleves.push({id:Date.now(),nom,classe,parent:pnom,tel:ptel,secoursNom,secoursTel});
+  saveData(); closeModal('modal-eleve');
+  document.getElementById('ne-nom').value='';
+  document.getElementById('ne-pnom').value='';
+  document.getElementById('ne-ptel').value='';
+  document.getElementById('ne-secnom').value='';
+  document.getElementById('ne-sectel').value='';
+  toast(`✅ ${nom} ajouté !`,'success');
+  renderEleves(); updateDashStats();
+}
+
+function parseImportCSV(){
+  const raw = document.getElementById('import-textarea').value.trim();
+  if(!raw) return [];
+  const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l);
+  const valid = [];
+  const errors = [];
+  lines.forEach((line,i)=>{
+    const parts = line.split(',').map(p=>p.trim());
+    if(parts.length < 4){ errors.push(`Ligne ${i+1} : format incorrect (4 champs requis)`); return; }
+    const [nom, classe, pnom, ptel] = parts;
+    if(!CLASSES.includes(classe)){ errors.push(`Ligne ${i+1} : classe "${classe}" invalide`); return; }
+    if(!nom || !pnom || !ptel){ errors.push(`Ligne ${i+1} : champ vide`); return; }
+    valid.push({nom, classe, parent:pnom, tel:ptel.replace(/[\s\-\(\)]/g,'')});
+  });
+  return {valid, errors};
+}
+
+function previewImport(){
+  const {valid, errors} = parseImportCSV();
+  let html = '';
+  if(valid.length) html += `<div style="font-size:0.78rem;color:var(--primary);font-weight:700;margin-bottom:6px;">✅ ${valid.length} élève(s) valide(s)</div>` +
+    valid.map(v=>`<div style="font-size:0.76rem;padding:4px 0;border-bottom:1px solid var(--border);">${v.nom} — ${v.classe} — ${v.parent} — ${v.tel}</div>`).join('');
+  if(errors.length) html += `<div style="font-size:0.78rem;color:var(--rouge);font-weight:700;margin-top:10px;margin-bottom:6px;">⚠️ ${errors.length} erreur(s)</div>` +
+    errors.map(e=>`<div style="font-size:0.75rem;color:var(--rouge);padding:2px 0;">${e}</div>`).join('');
+  if(!valid.length && !errors.length) html = `<div style="font-size:0.78rem;color:var(--text2);">Collez vos données puis cliquez sur Aperçu.</div>`;
+  document.getElementById('import-preview').innerHTML = html;
+}
+
+function confirmImport(){
+  const {valid, errors} = parseImportCSV();
+  if(!valid.length){ toast('⚠️ Aucun élève valide à importer.','warning'); previewImport(); return; }
+  valid.forEach((v,i)=>{
+    eleves.push({id:Date.now()+i, nom:v.nom, classe:v.classe, parent:v.parent, tel:v.tel, secoursNom:'', secoursTel:''});
+  });
+  saveData();
+  closeModal('modal-import');
+  document.getElementById('import-textarea').value='';
+  document.getElementById('import-preview').innerHTML='';
+  toast(`✅ ${valid.length} élève(s) importé(s)${errors.length?' · '+errors.length+' ignoré(s)':''}`,'success');
+  renderEleves(); updateDashStats();
+}
+
+function deleteEleve(id){
+  if(!confirm('Supprimer cet élève et toutes ses notes ?')) return;
+  APP.eleves=eleves=eleves.filter(e=>e.id!==id);
+  delete notes[id]; delete APP.notes[id];
+  saveData(); renderEleves(); updateDashStats();
+  toast('🗑️ Élève supprimé.','warning');
+}
+
+function addParent(){
+  const nom=document.getElementById('p-nom').value.trim();
+  const tel=document.getElementById('p-tel').value.trim().replace(/[\s\-\(\)]/g,'');
+  const eid=parseInt(document.getElementById('p-eleve').value);
+  if(!nom||!tel){toast('⚠️ Remplissez tous les champs.','warning');return;}
+  const e=eleves.find(x=>x.id===eid);
+  if(e){e.parent=nom;e.tel=tel;}
+  saveData(); closeModal('modal-parent');
+  toast('✅ Parent mis à jour !','success'); renderParents();
+}
+
+// ═══════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════
+function updateDashStats(){
+  const mois=getMois();
+  let totalN=0,totalB=0;
+  eleves.forEach(e=>{
+    const ns=notes[e.id]?.[mois]||{};
+    totalN+=Object.values(ns).reduce((s,a)=>s+a.length,0);
+    if(Object.values(ns).some(a=>a.length>0)) totalB++;
+  });
+  document.getElementById('s-eleves').textContent=eleves.length;
+  document.getElementById('s-notes').textContent=totalN;
+  document.getElementById('s-bulletins').textContent=totalB;
+  document.getElementById('s-parents').textContent=eleves.length;
+  document.getElementById('s-mois-label').textContent=getMois()+' '+new Date().getFullYear();
+}
+
+function renderDashboard(){
+  updateDashStats();
+  renderRappelFinMois();
+  const mois=getMois();
+  const avec=eleves.filter(e=>Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+  const recap=document.getElementById('dashboard-recap');
+  if(!avec.length){
+    recap.innerHTML=`<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">Aucune note saisie ce mois.</div></div>`;
+    return;
+  }
+  recap.innerHTML=`<table><thead><tr><th>Élève</th><th>Classe</th><th>Notes</th><th>Moyenne</th><th>Statut</th></tr></thead><tbody>`+
+    avec.map(e=>{
+      const moy=calcMoyenne(e.id,mois);
+      const ns=notes[e.id]?.[mois]||{};
+      const cnt=Object.values(ns).reduce((s,a)=>s+a.length,0);
+      const cl=moy>=14?'badge-green':moy>=10?'badge-or':'badge-red';
+      return `<tr><td><strong>${e.nom}</strong></td><td><span class="badge badge-kaki">${e.classe}</span></td>
+        <td>${cnt}</td><td><strong>${moy?moy.toFixed(2):'—'}/20</strong></td>
+        <td><span class="badge ${cl}">${moy>=14?'Excellent':moy>=10?'Assez bien':'À améliorer'}</span></td></tr>`;
+    }).join('')+'</tbody></table>';
+}
+
+function renderRappelFinMois(){
+  const el = document.getElementById('rappel-fin-mois');
+  const now = new Date();
+  const joursDansMois = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const joursRestants = joursDansMois - now.getDate();
+  const mois = getMois();
+  const sansNotes = eleves.filter(e=>!Object.values(notes[e.id]?.[mois]||{}).some(a=>a.length>0));
+
+  if(joursRestants <= 5 && sansNotes.length > 0){
+    el.innerHTML = `<div class="card" style="border:1.5px solid var(--gold);background:var(--accent-pale);margin-bottom:18px;">
+      <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8rem;">⏰</span>
+          <div>
+            <div style="font-weight:700;font-size:0.92rem;color:var(--accent);">Rappel de fin de mois</div>
+            <div style="font-size:0.82rem;color:var(--text2);">Il reste <strong>${joursRestants} jour(s)</strong> ce mois-ci. <strong>${sansNotes.length}</strong> élève(s) n'ont encore aucune note saisie pour ${mois}.</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showPage('notes')">✏️ Saisir maintenant</button>
+      </div>
+    </div>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+// ═══════════════════════════════════
+// PARAMÈTRES
+// ═══════════════════════════════════
+function initParams(){
+  document.getElementById('param-ecole').value=APP.params.ecole;
+  document.getElementById('param-annee').value=APP.params.annee;
+  document.getElementById('param-lock').value=String(APP.params.dateLimiteJour||0);
+  const sel=document.getElementById('param-mois');
+  for(let i=0;i<sel.options.length;i++) if(sel.options[i].value===APP.params.mois) sel.selectedIndex=i;
+
+  document.getElementById('font-size-slider').value=APP.settings.fontSize;
+  document.getElementById('fs-label').textContent=APP.settings.fontSize+'px';
+
+  document.getElementById('color-swatches').innerHTML=COULEURS.map((c,i)=>
+    `<div class="swatch${APP.settings.color===c.val?' active':''}" title="${c.nom}" style="background:${c.val}" data-color-idx="${i}"></div>`
+  ).join('');
+  document.querySelectorAll('#color-swatches .swatch').forEach((el,i)=>{
+    el.addEventListener('click', ()=>setColor(COULEURS[i].val, el));
+  });
+
+  document.getElementById('font-options').innerHTML=POLICES.map((p,i)=>
+    `<div class="font-opt${APP.settings.font===p.val?' active':''}" style="font-family:${p.val}" data-font-idx="${i}">${p.nom}</div>`
+  ).join('');
+  document.querySelectorAll('#font-options .font-opt').forEach((el,i)=>{
+    el.addEventListener('click', ()=>setFont(POLICES[i].val, el));
+  });
+
+  document.getElementById('btn-light').className='btn btn-sm '+(APP.settings.theme==='light'?'btn-primary':'btn-outline');
+  document.getElementById('btn-dark').className='btn btn-sm '+(APP.settings.theme==='dark'?'btn-primary':'btn-outline');
+}
+
+function saveParams(){
+  APP.params.ecole=document.getElementById('param-ecole').value.trim()||APP.params.ecole;
+  APP.params.annee=document.getElementById('param-annee').value.trim()||APP.params.annee;
+  APP.params.mois=document.getElementById('param-mois').value;
+  APP.params.dateLimiteJour=parseInt(document.getElementById('param-lock').value)||0;
+  document.getElementById('sidebar-annee').textContent='Année scolaire '+APP.params.annee;
+  document.getElementById('sidebar-school').textContent=APP.params.ecole;
+  document.getElementById('welcome-school-name').textContent=APP.params.ecole;
+  saveData(); updateDate();
+  toast('✅ Paramètres enregistrés !','success');
+}
+
+function setTheme(t){
+  APP.settings.theme=t;
+  document.body.classList.toggle('dark',t==='dark');
+  saveSettings(); initParams();
+  toast(t==='dark'?'🌙 Mode sombre activé':'☀️ Mode clair activé','success');
+}
+
+function setColor(val,el){
+  APP.settings.color=val;
+  document.documentElement.style.setProperty('--primary',val);
+  document.documentElement.style.setProperty('--primary2',val+'cc');
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  saveSettings();
+}
+
+function setFontSize(val){
+  APP.settings.fontSize=parseInt(val);
+  document.documentElement.style.setProperty('--fs',val+'px');
+  document.getElementById('fs-label').textContent=val+'px';
+  saveSettings();
+}
+
+function setFont(val,el){
+  APP.settings.font=val;
+  document.documentElement.style.setProperty('--font',val);
+  document.querySelectorAll('.font-opt').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  saveSettings();
+  toast('✅ Police mise à jour !','success');
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(APP,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='suiviscolaire_sauvegarde.json';
+  a.click();
+  toast('📤 Données exportées !','success');
+}
+
+function importData(ev){
+  if(AUTH.role!=='admin'){ toast('⚠️ Réservé à la direction.','warning'); return; }
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=migrateData(JSON.parse(e.target.result));
+      APP.eleves=d.eleves; APP.notes=d.notes; APP.appreciations=d.appreciations; APP.envois=d.envois; APP.params=d.params;
+      eleves=APP.eleves; notes=APP.notes; appreciations=APP.appreciations; envois=APP.envois;
+      saveData(); applySettings();
+      toast('📥 Données importées !','success');
+      renderDashboard();
+    }catch(err){toast('❌ Fichier invalide.','warning');}
+  };
+  r.readAsText(f);
+}
+
+function applySettings(){
+  if(APP.settings.theme==='dark') document.body.classList.add('dark');
+  if(APP.settings.color) document.documentElement.style.setProperty('--primary',APP.settings.color);
+  if(APP.settings.fontSize) document.documentElement.style.setProperty('--fs',APP.settings.fontSize+'px');
+  if(APP.settings.font) document.documentElement.style.setProperty('--font',APP.settings.font);
+  document.getElementById('sidebar-annee').textContent='Année scolaire '+APP.params.annee;
+  document.getElementById('sidebar-school').textContent=APP.params.ecole;
+  document.getElementById('welcome-school-name').textContent=APP.params.ecole;
+}
+
+// ═══════════════════════════════════
+// MODAL & TOAST
+// ═══════════════════════════════════
+function openModal(id){
+  if(id==='modal-parent'){
+    document.getElementById('p-eleve').innerHTML=eleves.map(e=>`<option value="${e.id}">${e.nom} (${e.classe})</option>`).join('');
+  }
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+
+function toast(msg,type=''){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(22px);transition:all 0.3s;';setTimeout(()=>t.remove(),300);},3200);
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+if(AUTH && AUTH.token){
+  initApp();
+} else {
+  showAuthScreen();
+  loadProfLoginOptions();
+}
+
+</script>
+</body>
+</html>
